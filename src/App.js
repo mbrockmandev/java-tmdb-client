@@ -17,7 +17,6 @@ function App() {
     try {
       const response = await fetch('http://localhost:5000/api/v1/movies');
       const data = await response.json();
-      console.log(data);
       setMovies(data);
     } catch (err) {
       console.log(err);
@@ -30,11 +29,17 @@ function App() {
         `http://localhost:5000/api/v1/movies/${movieId}`,
       );
 
-      const singleMovie = response.data;
+      const singleMovie = await response.json();
+
+      const actualReviews = [...singleMovie.reviewIds].map(
+        (review) => review.body,
+      );
+
+      console.log(actualReviews);
 
       setMovie(singleMovie);
 
-      setReviews(singleMovie.reviews);
+      setReviews(actualReviews);
     } catch (error) {
       console.error(error);
     }
