@@ -7,6 +7,7 @@ const Reviews = ({ getMovieData, movie, reviews, setReviews }) => {
   const revText = useRef();
   let params = useParams();
   const movieId = params.movieId;
+  const uri = `http://localhost:5001/api/v1/${movieId}`;
 
   useEffect(() => {
     getMovieData(movieId);
@@ -15,22 +16,19 @@ const Reviews = ({ getMovieData, movie, reviews, setReviews }) => {
   const addReview = async (e) => {
     e.preventDefault();
 
-    const rev = revText.current;
-
+    const review = revText.current;
+    const data = { imdbId: movieId, reviewBody: review.value };
     try {
-      const response = await fetch('http://localhost:5000/api/v1/reviews', {
-        method: 'POST',
+      const response = await fetch(uri, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: {
-          reviewBody: rev.value,
-          imdbId: movieId,
-        },
+        body: JSON.stringify(data),
       });
 
-      const updatedReviews = [...reviews, { body: rev.value }];
-      rev.value = '';
+      const updatedReviews = [...reviews, { body: review.value }];
+      review.value = '';
 
       setReviews(updatedReviews);
     } catch (error) {

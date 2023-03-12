@@ -13,9 +13,11 @@ function App() {
   const [movie, setMovie] = useState();
   const [reviews, setReviews] = useState([]);
 
+  const uri = 'http://localhost:5001/api/v1/movies';
+
   const getMovies = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/v1/movies');
+      const response = await fetch(uri);
       const data = await response.json();
       setMovies(data);
     } catch (err) {
@@ -25,21 +27,21 @@ function App() {
 
   const getMovieData = async (movieId) => {
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/v1/movies/${movieId}`,
-      );
-
+      const response = await fetch(`${uri}/${movieId}`);
       const singleMovie = await response.json();
+      // singleMovie.reviewIds is not iterable
 
-      const actualReviews = [...singleMovie.reviewIds].map(
-        (review) => review.body,
-      );
-
-      console.log(actualReviews);
+      if (singleMovie.reviews === null) {
+        setMovie(singleMovie);
+        return;
+      } else {
+        const actualReviews = singleMovie.reviews.map((review) => {
+          console.log(review);
+        });
+        setReviews(actualReviews);
+      }
 
       setMovie(singleMovie);
-
-      setReviews(actualReviews);
     } catch (error) {
       console.error(error);
     }
